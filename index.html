@@ -52,9 +52,7 @@
       <main class="main-content">
         <div class="title-bar">
           <span class="window-title">Welcome to My Homepage</span>
-          <button class="close-btn" onclick="window.location.href='bsod.html'">
-            X
-          </button>
+          <button class="close-btn" id="close-button">X</button>
         </div>
 
         <!-- Tabs -->
@@ -141,9 +139,68 @@
           </section>
 
           <!-- Honors & Awards -->
+          <!-- Honors & Awards -->
           <section id="awards" class="panel">
             <h2>Honors & Awards</h2>
-            <p>[Add your awards, scholarships, competitions, etc. here]</p>
+
+            <div class="award-item">
+              <div class="award-title">
+                YSEALI Game Changers Workshop & Game Jam (U.S. Department of
+                State)
+              </div>
+              <div class="award-meta">
+                <span class="award-location">Malaysia</span>
+                <span class="award-date">May 2023</span>
+              </div>
+              <div class="award-role">Selected Participant</div>
+              <ul class="award-details">
+                <li>
+                  Chosen through a competitive selection process to join a
+                  regional cohort focused on innovation, technology, and social
+                  impact.
+                </li>
+              </ul>
+            </div>
+
+            <div class="award-item">
+              <div class="award-title">East Asia Summit Hackathon</div>
+              <div class="award-meta">
+                <span class="award-location">Jakarta, Indonesia</span>
+                <span class="award-date">December 2022</span>
+              </div>
+              <div class="award-role">Gold Medalist</div>
+              <ul class="award-details">
+                <li>
+                  As part of a two-person team, built Ecopoint, a customer
+                  loyalty app designed to combat marine plastic pollution in the
+                  East Asia region. The project won a gold medal for its impact.
+                </li>
+                <li>
+                  Exclusively invited by the Commonwealth Scientific and
+                  Industrial Research Organisation (CSIRO) to join a moonshot
+                  technology startup in Vietnam.
+                </li>
+              </ul>
+            </div>
+
+            <div class="award-item">
+              <div class="award-title">Technovation Girls Cambodia</div>
+              <div class="award-meta">
+                <span class="award-location"
+                  >Phnom Penh Capital City, Cambodia</span
+                >
+                <span class="award-date">June 2021</span>
+              </div>
+              <div class="award-role">Volunteer</div>
+              <ul class="award-details">
+                <li>
+                  Mentored and contributed expertise to support young girls’
+                  teams in learning coding, AI, and real-world problem-solving,
+                  while helping them develop technical skills and professional
+                  networks.
+                </li>
+              </ul>
+            </div>
           </section>
 
           <!-- Extracurricular Activities -->
@@ -166,17 +223,60 @@
     <!-- Production credit -->
     <div class="production-credit">a Chanrithisak Phok Production © 2016</div>
 
-    <!-- Windows 95 Startup Sound -->
+    <!-- Audio Elements -->
     <audio id="startup-sound" preload="auto">
       <source src="public/windows-xp-startup.mp3" type="audio/mpeg" />
-      <!-- Add .wav if you have it as fallback -->
-      <!-- <source src="public/windows95_startup.wav" type="audio/wav" /> -->
-      Your browser does not support audio.
     </audio>
 
-    <!-- JavaScript for Tabs + Startup Sound (Plays once on first load, no manual click needed if allowed) -->
+    <audio id="tab-sound" preload="auto">
+      <source src="public/windows_tabs.mp3" type="audio/mpeg" />
+    </audio>
+
+    <audio id="shutdown-sound" preload="auto">
+      <source src="public/windows_shutdown.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- JavaScript for Sounds + Tabs -->
     <script>
-      // Tab switching
+      const startupAudio = document.getElementById("startup-sound");
+      const tabAudio = document.getElementById("tab-sound");
+      const shutdownAudio = document.getElementById("shutdown-sound");
+
+      // Play tab sound
+      function playTabSound() {
+        if (tabAudio) {
+          tabAudio.currentTime = 0;
+          tabAudio.play().catch(() => {});
+        }
+      }
+
+      // Play shutdown sound and wait for it to finish before redirect
+      function playShutdownAndRedirect() {
+        if (shutdownAudio) {
+          shutdownAudio.currentTime = 0;
+          shutdownAudio.volume = 0.8;
+
+          const playPromise = shutdownAudio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                // Wait for sound to finish (use duration or fallback timeout)
+                const duration = shutdownAudio.duration * 1000 || 3000; // fallback 3 seconds
+                setTimeout(() => {
+                  window.location.href = "bsod.html";
+                }, duration);
+              })
+              .catch(() => {
+                // If sound blocked, redirect immediately
+                window.location.href = "bsod.html";
+              });
+          }
+        } else {
+          window.location.href = "bsod.html";
+        }
+      }
+
+      // Tab switching + tab sound
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", function (e) {
           e.preventDefault();
@@ -189,44 +289,50 @@
           this.classList.add("active");
           const tabId = this.getAttribute("data-tab");
           document.getElementById(tabId).classList.add("active");
+
+          playTabSound();
         });
       });
 
-      // Sync sidebar links with tabs
+      // Sidebar links + tab sound
       document.querySelectorAll(".sidebar-nav a").forEach((link) => {
         link.addEventListener("click", function (e) {
           e.preventDefault();
           const targetTab = this.getAttribute("href").substring(1);
           document.querySelector(`.tab[data-tab="${targetTab}"]`).click();
+          playTabSound();
         });
       });
 
-      // Play Windows 95 startup sound once on first page load
-      const startupAudio = document.getElementById("startup-sound");
+      // Close button → play shutdown sound and wait before redirect
+      document
+        .getElementById("close-button")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          playShutdownAndRedirect();
+        });
 
+      // Startup sound on first load (plays once per session)
       if (startupAudio && !sessionStorage.getItem("startupPlayed")) {
-        startupAudio.volume = 0.7; // Comfortable volume
+        startupAudio.volume = 0.7;
 
-        // Mark as played for this session (so it doesn't replay on tab switch/reload in same session)
-        sessionStorage.setItem("startupPlayed", "true");
-
-        // Attempt autoplay on load
         window.addEventListener("load", () => {
           const playPromise = startupAudio.play();
-
           if (playPromise !== undefined) {
             playPromise.catch(() => {
-              // If blocked, wait for first user interaction (click or key) to play once
-              const playOnce = () => {
+              // If blocked, play on first interaction
+              const unlockAndPlay = () => {
                 startupAudio.play();
-                document.removeEventListener("click", playOnce);
-                document.removeEventListener("keydown", playOnce);
+                document.removeEventListener("click", unlockAndPlay);
+                document.removeEventListener("keydown", unlockAndPlay);
               };
-              document.addEventListener("click", playOnce);
-              document.addEventListener("keydown", playOnce);
+              document.addEventListener("click", unlockAndPlay);
+              document.addEventListener("keydown", unlockAndPlay);
             });
           }
         });
+
+        sessionStorage.setItem("startupPlayed", "true");
       }
     </script>
   </body>

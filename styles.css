@@ -1,10 +1,12 @@
 /* Authentic Windows 95 Font - crisp and readable */
 body {
-  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, Helvetica, sans-serif;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, Helvetica,
+    sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: teal url("public/windows_95_clouds.webp") fixed center center / cover no-repeat;
+  background: teal url("public/windows_95_clouds.webp") fixed center center /
+    cover no-repeat;
   color: black;
   margin: 0;
   padding: 20px 0;
@@ -224,6 +226,63 @@ body {
   color: purple;
 }
 
+/* Honors & Awards Section - Clean & Professional Layout */
+.award-item {
+  margin-bottom: 35px;
+  padding-bottom: 20px;
+  border-bottom: 1px dotted #aaa;
+}
+
+.award-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.award-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: purple;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.award-meta {
+  margin-bottom: 8px;
+  text-align: right;
+  font-size: 13px;
+  color: #444;
+}
+
+.award-location {
+  display: block;
+  font-style: italic;
+}
+
+.award-date {
+  display: block;
+  color: #666;
+  margin-top: 2px;
+}
+
+.award-role {
+  font-size: 15px;
+  font-weight: bold;
+  color: navy;
+  margin: 10px 0 8px 0;
+}
+
+.award-details {
+  margin: 8px 0 0 20px;
+  padding-left: 0;
+  color: #333;
+}
+
+.award-details li {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
 /* Production Credit */
 .production-credit {
   text-align: center;
@@ -245,5 +304,19 @@ body {
   .sidebar {
     border-right: none;
     border-bottom: 2px solid #404040;
+  }
+
+  .award-meta {
+    text-align: left;
+    margin-top: 5px;
+  }
+
+  .award-location,
+  .award-date {
+    display: inline;
+  }
+
+  .award-location::after {
+    content: " • ";
   }
 }
