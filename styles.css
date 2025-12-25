@@ -226,7 +226,7 @@ body {
   color: purple;
 }
 
-/* Honors & Awards Section - Clean & Professional Layout */
+/* Honors & Awards Section - Title with location/date on same line (right-aligned) */
 .award-item {
   margin-bottom: 35px;
   padding-bottom: 20px;
@@ -239,37 +239,34 @@ body {
   padding-bottom: 0;
 }
 
+.award-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
 .award-title {
   font-size: 16px;
   font-weight: bold;
   color: purple;
-  margin-bottom: 6px;
-  display: block;
+  flex: 1;
+  padding-right: 20px;
 }
 
-.award-meta {
-  margin-bottom: 8px;
-  text-align: right;
+.award-meta-inline {
   font-size: 13px;
   color: #444;
-}
-
-.award-location {
-  display: block;
+  text-align: right;
   font-style: italic;
-}
-
-.award-date {
-  display: block;
-  color: #666;
-  margin-top: 2px;
+  white-space: nowrap;
 }
 
 .award-role {
   font-size: 15px;
   font-weight: bold;
   color: navy;
-  margin: 10px 0 8px 0;
+  margin: 8px 0 10px 0;
 }
 
 .award-details {
@@ -306,17 +303,14 @@ body {
     border-bottom: 2px solid #404040;
   }
 
-  .award-meta {
+  .award-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .award-meta-inline {
     text-align: left;
-    margin-top: 5px;
-  }
-
-  .award-location,
-  .award-date {
-    display: inline;
-  }
-
-  .award-location::after {
-    content: " • ";
+    margin-top: 4px;
+    font-style: normal;
   }
 }
