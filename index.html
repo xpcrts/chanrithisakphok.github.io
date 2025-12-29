@@ -26,7 +26,7 @@
     />
     <link rel="icon" type="image/png" href="public/favicon.png" />
     <style>
-      /* Small real-time clock next to the close button (Minesweeper LED style) */
+      /* Title bar right side layout */
       .title-bar {
         display: flex;
         justify-content: space-between;
@@ -40,6 +40,7 @@
         gap: 8px;
       }
 
+      /* Real-time clock */
       .real-clock {
         font-family: "DS-Digital", "Electronic", "Courier New", monospace;
         font-size: 18px;
@@ -47,9 +48,23 @@
         color: red;
         background: black;
         padding: 2px 6px;
-        min-width: 70px;
+        min-width: 80px;
         text-align: center;
         border: 2px inset silver;
+      }
+
+      /* Weather: City + Temp */
+      .real-location-weather {
+        font-family: "DS-Digital", "Electronic", "Courier New", monospace;
+        font-size: 18px;
+        font-weight: bold;
+        color: red;
+        background: black;
+        padding: 2px 6px;
+        min-width: 120px;
+        text-align: center;
+        border: 2px inset silver;
+        white-space: nowrap;
       }
     </style>
   </head>
@@ -106,18 +121,13 @@
 
       <!-- Right Main Content -->
       <main class="main-content">
-        <!-- <div class="title-bar">
-          <span class="window-title">Welcome to My Homepage</span>
-          <div class="title-bar-right">
-            <div class="real-clock" id="real-clock">00:00:00</div>
-            <button class="close-btn" id="close-button">X</button>
-          </div>
-        </div> -->
         <div class="title-bar">
           <span class="window-title">Welcome to My Homepage</span>
           <div class="title-bar-right">
             <div class="real-clock" id="real-clock">00:00:00</div>
-            <div class="real-weather" id="real-weather">--°C</div>
+            <div class="real-location-weather" id="real-location-weather">
+              --°C
+            </div>
             <button class="close-btn" id="close-button">X</button>
           </div>
         </div>
@@ -572,41 +582,15 @@
       <source src="public/windows_shutdown.mp3" type="audio/mpeg" />
     </audio>
 
-    <!-- JavaScript for Sounds + Tabs + Real Clock -->
+    <!-- JavaScript for Sounds + Tabs + Clock + Location/Weather -->
     <script>
       const startupAudio = document.getElementById("startup-sound");
       const tabAudio = document.getElementById("tab-sound");
       const shutdownAudio = document.getElementById("shutdown-sound");
       const realClock = document.getElementById("real-clock");
-      const realWeather = document.getElementById("real-weather");
-
-      // Fetch user's approximate location via IP, then get current temperature
-      fetch("https://ipapi.co/json/")
-        .then((response) => response.json())
-        .then((locationData) => {
-          if (locationData.latitude && locationData.longitude) {
-            const lat = locationData.latitude;
-            const lon = locationData.longitude;
-
-            // Open-Meteo API: current temperature in Celsius (default unit)
-            fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&temperature_unit=celsius`
-            )
-              .then((resp) => resp.json())
-              .then((weatherData) => {
-                const temp = Math.round(weatherData.current.temperature_2m);
-                realWeather.textContent = `${temp}°C`;
-              })
-              .catch(() => {
-                realWeather.textContent = "??°C";
-              });
-          } else {
-            realWeather.textContent = "??°C";
-          }
-        })
-        .catch(() => {
-          realWeather.textContent = "??°C";
-        });
+      const realLocationWeather = document.getElementById(
+        "real-location-weather"
+      );
 
       // Real-time clock (user's local time, HH:MM:SS, 24-hour format)
       function updateRealClock() {
@@ -618,6 +602,36 @@
       }
       updateRealClock();
       setInterval(updateRealClock, 1000);
+
+      // Fetch location + weather
+      realLocationWeather.textContent = "Loading...";
+
+      fetch("https://ipapi.co/json/")
+        .then((response) => response.json())
+        .then((data) => {
+          const city = data.city || "Unknown";
+          const lat = data.latitude;
+          const lon = data.longitude;
+
+          if (lat && lon) {
+            fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&temperature_unit=celsius`
+            )
+              .then((resp) => resp.json())
+              .then((weather) => {
+                const temp = Math.round(weather.current.temperature_2m);
+                realLocationWeather.textContent = `${city} ${temp}°C`;
+              })
+              .catch(() => {
+                realLocationWeather.textContent = `${city} ??°C`;
+              });
+          } else {
+            realLocationWeather.textContent = `${city} ??°C`;
+          }
+        })
+        .catch(() => {
+          realLocationWeather.textContent = "?? ??°C";
+        });
 
       // Play tab sound
       function playTabSound() {
@@ -637,7 +651,7 @@
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
-                const duration = shutdownAudio.duration * 520 || 3000; // fallback 3s
+                const duration = shutdownAudio.duration * 520 || 3000;
                 setTimeout(() => {
                   window.location.href = "bsod.html";
                 }, duration);
